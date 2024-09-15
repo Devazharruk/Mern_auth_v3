@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "NODE_ENV=development npx nodemon backend/index.js",
 		"start": "NODE_ENV=production node backend/index.js",
-		"build": "pnpm install && pnpm install --prefix frontend && pnpm run build --prefix frontend"
+		"build": "pnpm install --no-frozen-lockfile && pnpm install --prefix frontend && pnpm run build --prefix frontend"
 	},
 	"keywords": [],
 	"author": "",

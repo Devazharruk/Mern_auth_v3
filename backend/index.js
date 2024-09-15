@@ -1,21 +1,37 @@
 import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import { connectDB } from "./db/db.js";
-import authRoutes from "./routes/auth.js";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import path from "path";
+
+import { connectDB } from "./db/connectDB.js";
+
+import authRoutes from "./routes/auth.route.js";
+
 dotenv.config();
-connectDB();
+
 const app = express();
-const port = 5000 || process.env.PORT;
+const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(cookieParser());
-app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(express.json()); // allows us to parse incoming requests:req.body
+app.use(cookieParser()); // allows us to parse incoming cookies
+
 app.use("/api/auth", authRoutes);
-app.listen(port, () => console.log(`app listin ${port}`));
+app.get("/",(req,res)=>{
+    res.send("Hello World")
+})
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+	app.get("*", (req, res) => {
+		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+	});
+}
+
+app.listen(PORT, () => {
+	connectDB();
+	console.log("Server is running on port: ", PORT);
+});
